@@ -1,0 +1,311 @@
+select * from sales;
+describe sales;
+describe sales_data;
+
+
+#total revenue
+select sum(Sales) from sales;
+#average sales
+select avg(sales) from sales;
+#total(count) sales
+select count(Sales) from sales;
+#max and min sale
+select max(Sales) from sales;
+select min(Sales) from sales;
+#total profit
+select sum(Profit) as total_profit from sales;
+#max and min profit
+select max(Profit) from sales;
+select min(Profit) from sales;
+#total products
+select count(distinct Product_ID) from products;
+#total customers
+select count(distinct Customer_ID) from customers;
+#total orders
+select count(distinct Order_ID) from orders;
+
+#CUSTOMERS ANALYSIS
+#1)top 10 customers by sales
+select c.Customer_Name, sum(s.Sales) as Total_sales from customers c join sales s
+on c.Customer_ID=s.Customer_ID
+group by c.Customer_Name
+order by Total_sales desc
+limit 10;
+
+#2)top 10 customers by profit
+select c.Customer_name, sum(s.Profit) as Total_Profit from customers c join sales s
+on c.Customer_ID=s.Customer_ID
+group by c.Customer_Name
+order by Total_Profit desc
+limit 10;
+
+#3)Customers with High Sales but Low Profit
+select c.Customer_Name,sum(s.Sales),sum(s.Profit) from sales s join customers c  
+on s.Customer_ID=c.Customer_ID
+group by c.Customer_ID
+having sum(s.Sales)>1000 and sum(s.Profit)<1000
+order by sum(s.sales) desc;
+
+#PRODUCTS ANALYSIS
+#4)Top 10 selling products
+select p.Product_Name,sum(s.Quantity) as total_quantity from sales s join products p 
+on s.Product_ID=p.Product_ID
+group by p.Product_Name
+order by total_quantity desc
+limit 10;
+
+#5)Most Profitable Products
+select p.Product_Name,sum(s.Profit) as total_profit from sales s join products p 
+on s.Product_ID=p.Product_ID
+group by p.Product_Name
+order by total_profit desc
+limit 5;
+
+#6)loss products
+select p.Product_Name,sum(s.Profit) as total_profit from sales s join products p 
+on s.Product_ID=p.Product_ID
+group by p.Product_Name
+having Total_profit<0
+order by total_profit;
+
+#7)Products having High sales but Low profit
+select p.Product_Name,sum(s.Sales),sum(s.Profit) from sales s join products p 
+on s.Product_ID=p.Product_ID
+group by p.Product_Name
+having sum(s.Sales)>1000 and sum(s.Profit)<1000;
+
+#LOCATION ANALYSIS
+#8)region wise sales
+select l.Region,sum(s.Sales) as Total_Sales from location l join sales s 
+on l.Postal_Code=s.Postal_Code
+group by l.Region
+order by Total_Sales desc;
+
+#9)state wise sales
+select l.State,sum(s.Sales) as Total_Sales from location l join sales s 
+on l.Postal_Code=s.Postal_Code
+group by l.State;
+
+#10)state wise profit
+select l.State,sum(s.Profit) as Total_Profit from location l join sales s 
+on l.Postal_Code=s.Postal_Code
+group by l.State
+order by Total_Profit;
+
+#11)Underperforming Locations
+select l.State,sum(s.Profit) as Total_Profit from location l join sales s 
+on l.Postal_Code=s.Postal_Code
+group by l.State
+having Total_Profit<0
+order by Total_Profit;
+
+#12)sub-category wise profit
+SELECT 
+    P.Sub_Category,
+    SUM(S.Profit) AS Total_Profit
+FROM Sales S
+JOIN Products P
+ON S.Product_ID = P.Product_ID
+GROUP BY P.Sub_Category
+ORDER BY Total_Profit DESC;
+
+#TIME SERIES
+#13)Monthly Sales Trend
+SELECT 
+    MONTH(Order_Date) AS Month_No,
+    SUM(S.Sales) AS Total_Sales
+FROM Sales S
+JOIN Orders O
+ON S.Order_ID = O.Order_ID
+GROUP BY Month_No
+ORDER BY Month_No;
+
+#SHIPPING
+#14)Shipmode wise analysis
+select o.Ship_Mode,sum(s.Sales) from orders o join sales s
+on s.Order_ID=o.Order_ID
+group by o.Ship_Mode;
+
+
+#15)Discount Impact on Profit
+select Discount,sum(Profit) as Total_Profit from sales
+group by Discount
+order by Discount;
+
+#ANOTHER QUERIES
+#1)Which Region Generates Highest Profit?
+select l.Region,sum(s.Profit) as Total_Profit from location l join sales s 
+on l.Postal_Code=s.Postal_Code
+group by l.Region
+order by Total_Profit desc
+limit 1;
+#2)Which Customers Are Causing Loss?
+select c.Customer_Name,sum(s.Profit) from customers c join sales s 
+on c.Customer_ID=s.Customer_ID
+group by c.Customer_Name
+having sum(s.Profit)<0;
+#3)Which Ship Mode Is Most Used?
+select o.Ship_Mode,count(*) from sales s join orders o 
+on s.Order_ID=o.Order_ID
+group by o.Ship_Mode
+order by count(*) desc;
+#4)Average Delivery Days by Ship Mode
+SELECT 
+    Ship_Mode,
+    AVG(DATEDIFF(Ship_Date, Order_Date)) AS Avg_Delivery_Days
+FROM orders
+GROUP BY Ship_Mode;
+#5)Which Month Has Highest Sales?
+select monthname(o.Order_Date) as Month_Name,sum(s.Sales) as Total_Sales from sales s join orders o 
+on s.Order_ID=o.Order_ID
+group by Month_Name
+order by Total_Sales desc
+limit 1;
+#6)Find Repeat Customers
+select c.Customer_Name,count(s.Order_ID) as Total_Orders from sales s join customers c 
+on s.Customer_ID=c.Customer_ID
+group by c.Customer_Name
+having Total_Orders>1
+order by Total_Orders desc;
+#7)11. Find Customer Lifetime Value (CLV)
+select c.Customer_Name,sum(s.Sales) as Lifetime_Value from sales s join customers c 
+on c.Customer_ID=s.Customer_ID
+group by c.Customer_Name
+order by Lifetime_Value desc;
+#8)Which Customers Give Maximum Profit Margin?
+select c.Customer_Name,round((sum(s.Profit)/sum(s.Sales))*100,2) as Profit_Margin_Percentage from sales s join customers c 
+on s.Customer_ID=c.Customer_ID
+group by c.Customer_Name
+order by Profit_Margin_Percentage desc
+limit 20;
+#9)Find Year-over-Year Sales Growth
+select year(o.Order_Date) as year,sum(s.Sales) as Totalsales from sales s join orders o 
+on o.Order_ID=s.Order_ID
+group by year;
+#10)Top 5 Most Frequently Ordered Products
+select p.Product_Name,count(s.Order_ID) as TotalOrders from products p join sales s 
+on p.Product_ID=s.Product_ID
+group by p.Product_Name
+order by TotalOrders desc 
+limit 5;
+#11)Which Region Has Highest Average Order Value?
+SELECT 
+    l.Region,
+    ROUND(SUM(s.Sales) / COUNT(DISTINCT s.Order_ID),2) AS Avg_Order_Value
+FROM sales s
+JOIN location l
+ON s.Postal_Code = l.Postal_Code
+GROUP BY l.Region
+ORDER BY Avg_Order_Value DESC;
+#12)Find Orders with Highest Profit
+SELECT 
+    s.Order_ID,
+    SUM(s.Profit) AS Total_Profit
+FROM sales s
+GROUP BY s.Order_ID
+ORDER BY Total_Profit DESC
+LIMIT 10;
+#13)Find Products Never Sold in Loss
+SELECT 
+    p.Product_Name
+FROM sales s
+JOIN products p
+ON s.Product_ID = p.Product_ID
+GROUP BY p.Product_Name
+HAVING MIN(s.Profit) > 0;
+#14)Find Top 3 Products in Each Category
+SELECT *
+FROM (
+    SELECT
+        p.Category,
+        p.Product_Name,
+        SUM(s.Sales) AS Total_Sales,
+        DENSE_RANK() OVER(
+            PARTITION BY p.Category
+            ORDER BY SUM(s.Sales) DESC
+        ) AS Ranking
+    FROM sales s
+    JOIN products p
+        ON s.Product_ID = p.Product_ID
+    GROUP BY p.Category, p.Product_Name
+) x
+WHERE Ranking <= 3;
+#15)Find Best Performing Sub-Category in Each Region
+SELECT *
+FROM (
+    SELECT
+        l.Region,
+        p.Sub_Category,
+        SUM(s.Sales) AS Total_Sales,
+        RANK() OVER(
+            PARTITION BY l.Region
+            ORDER BY SUM(s.Sales) DESC
+        ) AS Ranking
+    FROM sales s
+    JOIN products p
+        ON s.Product_ID = p.Product_ID
+    JOIN location l
+        ON s.Postal_Code = l.Postal_Code
+    GROUP BY l.Region, p.Sub_Category
+) x
+WHERE Ranking =1;
+
+
+KPI'S-
+
+#Which region contributes highest revenue?
+select l.Region,sum(s.Sales) as Total_Sales from location l join sales s 
+on l.Postal_Code=s.Postal_Code
+group by l.Region
+order by Total_Sales desc;
+
+#Which products generate losses?
+select p.Product_Name,sum(s.Profit) as total_profit from sales s join products p 
+on s.Product_ID=p.Product_ID
+group by p.Product_Name
+having Total_profit<0
+order by total_profit;
+
+
+#Does higher discount reduce profit?
+select Discount,sum(Profit) as Total_Profit from sales
+group by Discount
+order by Discount desc;
+
+#Who are the most valuable customers (CLV)?
+select c.Customer_Name,sum(s.Sales) as Lifetime_Value from sales s join customers c 
+on c.Customer_ID=s.Customer_ID
+group by c.Customer_Name
+order by Lifetime_Value desc
+limit 50;
+
+#Which shipping mode performs best?
+select o.Ship_Mode,sum(s.Sales) from orders o join sales s
+on s.Order_ID=o.Order_ID
+group by o.Ship_Mode
+order by sum(s.Sales);
+
+#Which regions perform best?
+select l.Region,sum(s.Sales) as Total_Sales from location l join sales s 
+on l.Postal_Code=s.Postal_Code
+group by l.Region
+order by Total_Sales desc;
+
+#Which customer segments are most profitable?
+select c.segment,sum(s.profit) as Total_Profit from customers c join sales s
+on c.customer_ID=s.customer_ID
+group by c.segment
+order by Total_Profit desc;
+
+#Monthly sales trends?
+SELECT 
+    MONTH(Order_Date) AS Month_No,
+    SUM(S.Sales) AS Total_Sales
+FROM Sales S
+JOIN Orders O
+ON S.Order_ID = O.Order_ID
+GROUP BY Month_No
+ORDER BY Month_No;
+
+
+

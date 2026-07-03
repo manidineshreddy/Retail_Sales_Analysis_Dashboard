@@ -1,0 +1,236 @@
+CREATE DATABASE Retail_Sales_DataBase;
+
+USE Retail_Sales_DataBase;
+
+CREATE TABLE Customers (
+    Customer_ID VARCHAR(20) PRIMARY KEY,
+    Customer_Name VARCHAR(100),
+    Segment VARCHAR(50)
+);
+
+
+CREATE TABLE Orders (
+    Order_ID VARCHAR(30) PRIMARY KEY,
+    Order_Date DATE,
+    Ship_Date DATE,
+    Ship_Mode VARCHAR(50)
+);
+
+CREATE TABLE Location (
+    Postal_Code INT PRIMARY KEY,
+    Country VARCHAR(50),
+    City VARCHAR(50),
+    State VARCHAR(50),
+    Region VARCHAR(50)
+);
+
+CREATE TABLE Products (
+    Product_ID VARCHAR(30) PRIMARY KEY,
+    Category VARCHAR(50),
+    Sub_Category VARCHAR(50),
+    Product_Name VARCHAR(255)
+);
+
+CREATE TABLE Sales (
+    Row_ID INT PRIMARY KEY,
+    Order_ID VARCHAR(30),
+    Customer_ID VARCHAR(20),
+    Product_ID VARCHAR(30),
+    Postal_Code INT,
+    Sales DECIMAL(10,2),
+    Quantity INT,
+    Discount DECIMAL(5,2),
+    Profit DECIMAL(10,2),
+
+    FOREIGN KEY (Order_ID) REFERENCES Orders(Order_ID),
+    FOREIGN KEY (Customer_ID) REFERENCES Customers(Customer_ID),
+    FOREIGN KEY (Product_ID) REFERENCES Products(Product_ID),
+    FOREIGN KEY (Postal_Code) REFERENCES Location(Postal_Code)
+);
+
+SHOW WARNINGS;
+SELECT *
+FROM book1
+ORDER BY `Row ID` DESC
+LIMIT 10;
+SELECT MIN(`Row ID`) AS MinID,
+       MAX(`Row ID`) AS MaxID,
+       COUNT(*) AS TotalRows
+FROM book1;
+
+WITH RECURSIVE nums AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1
+    FROM nums
+    WHERE n < 1000
+)
+SELECT n AS Missing_RowID
+FROM nums
+WHERE n NOT IN (
+    SELECT `Row ID`
+    FROM book1
+);
+
+SHOW CREATE TABLE book1;
+
+CREATE TABLE sales_data_full (
+   `Row ID` INT,
+   `Order ID` TEXT,
+   `Order Date` TEXT,
+   `Ship Date` TEXT,
+   `Ship Mode` TEXT,
+   `Customer ID` TEXT,
+   `Customer Name` TEXT,
+   `Segment` TEXT,
+   `Country` TEXT,
+   `City` TEXT,
+   `State` TEXT,
+   `Postal Code` INT,
+   `Region` TEXT,
+   `Product ID` TEXT,
+   `Category` TEXT,
+   `Sub-Category` TEXT,
+   `Product Name` TEXT,
+   `Sales` DOUBLE,
+   `Quantity` INT,
+   `Discount` DOUBLE,
+   `Profit` DOUBLE
+);
+
+
+SELECT COUNT(*) 
+FROM book1
+WHERE `Row ID` IN (
+33,77,106,199,256,275,278,300,340,344,
+381,444,476,580,629,630,672,744,746,760,
+849,873,879,892,933,934,941,942,959
+);
+CREATE TABLE sales_data_missing LIKE book1;
+INSERT INTO sales_data_missing (`Row ID`, `Order ID`, `Order Date`, `Ship Date`, `Ship Mode`, `Customer ID`, `Customer Name`, `Segment`, `Country`, `City`, `State`, `Postal Code`, `Region`, `Product ID`, `Category`, `Sub-Category`, `Product Name`, `Sales`, `Quantity`, `Discount`, `Profit`) VALUES
+(33, 'US-2015-150630', '17-09-2015', '21-09-2015', 'Standard Class', 'TB-21520', 'Tracy Blumstein', 'Consumer', 'United States', 'Philadelphia', 'Pennsylvania', 19140, 'East', 'OFF-BI-10001525', 'Office Supplies', 'Binders', 'Acco Pressboard Covers with Storage Hooks, 14 7/8" x 11", Executive Red', 6.858, 6, 0.7, -5.715),
+(77, 'US-2017-118038', '09-12-2017', '11-12-2017', 'First Class', 'KB-16600', 'Ken Brennan', 'Corporate', 'United States', 'Houston', 'Texas', 77041, 'Central', 'FUR-FU-10000260', 'Furniture', 'Furnishings', '6" Cubicle Wall Clock, Black', 9.708, 3, 0.6, -5.8248),
+(106, 'US-2015-156867', '13-11-2015', '17-11-2015', 'Standard Class', 'LC-16870', 'Lena Cacioppo', 'Consumer', 'United States', 'Aurora', 'Colorado', 80013, 'West', 'OFF-BI-10002794', 'Office Supplies', 'Binders', 'Avery Trapezoid Ring Binder, 3" Capacity, Black, 1040 sheets', 36.882, 3, 0.7, -25.8174),
+(199, 'US-2017-124303', '06-07-2017', '13-07-2017', 'Standard Class', 'FH-14365', 'Fred Hopkins', 'Corporate', 'United States', 'Philadelphia', 'Pennsylvania', 19120, 'East', 'OFF-BI-10000343', 'Office Supplies', 'Binders', 'Pressboard Covers with Storage Hooks, 9 1/2" x 11", Light Blue', 2.946, 2, 0.7, -2.2586),
+(256, 'US-2015-159982', '28-11-2015', '04-12-2015', 'Standard Class', 'DR-12880', 'Dan Reichenbach', 'Corporate', 'United States', 'Chicago', 'Illinois', 60623, 'Central', 'OFF-ST-10004804', 'Office Supplies', 'Storage', 'Belkin 19" Vented Equipment Shelf, Black', 82.368, 2, 0.2, -19.5624),
+(275, 'CA-2017-118136', '16-09-2017', '17-09-2017', 'First Class', 'BB-10990', 'Barry Blumstein', 'Corporate', 'United States', 'Inglewood', 'California', 90301, 'West', 'OFF-PA-10002615', 'Office Supplies', 'Paper', 'Ampad Gold Fibre Wirebound Steno Books, 6" x 9", Gregg Ruled', 8.82, 2, 0.0, 4.0572),
+(278, 'CA-2017-132976', '13-10-2017', '17-10-2017', 'Standard Class', 'AG-10495', 'Andrew Gjertsen', 'Corporate', 'United States', 'Philadelphia', 'Pennsylvania', 19140, 'East', 'OFF-PA-10004470', 'Office Supplies', 'Paper', 'Adams Write n'' Stick Phone Message Book, 11" X 5 1/4", 200 Messages', 18.176, 4, 0.2, 5.9072),
+(300, 'CA-2016-142545', '28-10-2016', '03-11-2016', 'Standard Class', 'JD-15895', 'Jonathan Doherty', 'Corporate', 'United States', 'Belleville', 'New Jersey', 7109, 'East', 'OFF-ST-10002756', 'Office Supplies', 'Storage', 'Tennsco Stur-D-Stor Boltless Shelving, 5 Shelves, 24" Deep, Sand', 1082.48, 8, 0.0, 10.8248),
+(340, 'CA-2015-128167', '22-06-2015', '26-06-2015', 'Second Class', 'KL-16645', 'Ken Lonsdale', 'Consumer', 'United States', 'Layton', 'Utah', 84041, 'West', 'OFF-FA-10000490', 'Office Supplies', 'Fasteners', 'OIC Binder Clips, Mini, 1/4" Capacity, Black', 4.96, 4, 0.0, 2.3312),
+(344, 'CA-2014-122336', '13-04-2014', '17-04-2014', 'Second Class', 'JD-15895', 'Jonathan Doherty', 'Corporate', 'United States', 'Philadelphia', 'Pennsylvania', 19140, 'East', 'TEC-PH-10000702', 'Technology', 'Phones', 'Square Credit Card Reader, 4 1/2" x 4 1/2" x 1", White', 71.928, 12, 0.4, 8.3916),
+(381, 'CA-2015-130792', '28-04-2015', '05-05-2015', 'Standard Class', 'RA-19915', 'Russell Applegate', 'Consumer', 'United States', 'Houston', 'Texas', 77095, 'Central', 'OFF-BI-10000309', 'Office Supplies', 'Binders', 'GBC Twin Loop Wire Binding Elements, 9/16" Spine, Black', 12.176, 4, 0.8, -18.8728),
+(444, 'CA-2016-115756', '05-09-2016', '07-09-2016', 'Second Class', 'PK-19075', 'Pete Kriz', 'Consumer', 'United States', 'Detroit', 'Michigan', 48227, 'Central', 'OFF-PA-10002222', 'Office Supplies', 'Paper', 'Xerox Color Copier Paper, 11" x 17", Ream', 91.36, 4, 0.0, 42.0256),
+(476, 'CA-2014-144666', '09-11-2014', '11-11-2014', 'Second Class', 'JP-15520', 'Jeremy Pistek', 'Consumer', 'United States', 'San Francisco', 'California', 94110, 'West', 'OFF-PA-10001509', 'Office Supplies', 'Paper', 'Recycled Desk Saver Line "While You Were Out" Book, 5 1/2" X 4"', 62.65, 7, 0.0, 28.819),
+(580, 'CA-2017-118640', '20-07-2017', '26-07-2017', 'Standard Class', 'CS-11950', 'Carlos Soltero', 'Consumer', 'United States', 'Chicago', 'Illinois', 60610, 'Central', 'FUR-FU-10001475', 'Furniture', 'Furnishings', 'Contract Clock, 14", Brown', 8.792, 1, 0.6, -5.7148),
+(629, 'CA-2017-133431', '17-12-2017', '21-12-2017', 'Standard Class', 'LC-17140', 'Logan Currie', 'Consumer', 'United States', 'San Francisco', 'California', 94122, 'West', 'OFF-BI-10000605', 'Office Supplies', 'Binders', 'Acco Pressboard Covers with Storage Hooks, 9 1/2" x 11", Executive Red', 15.24, 5, 0.2, 5.1435),
+(630, 'CA-2017-133431', '17-12-2017', '21-12-2017', 'Standard Class', 'LC-17140', 'Logan Currie', 'Consumer', 'United States', 'San Francisco', 'California', 94122, 'West', 'OFF-PA-10002615', 'Office Supplies', 'Paper', 'Ampad Gold Fibre Wirebound Steno Books, 6" x 9", Gregg Ruled', 13.23, 3, 0.0, 6.0858),
+(672, 'US-2017-106663', '09-06-2017', '13-06-2017', 'Standard Class', 'MO-17800', 'Meg O''Connel', 'Home Office', 'United States', 'Chicago', 'Illinois', 60653, 'Central', 'OFF-PA-10002377', 'Office Supplies', 'Paper', 'Adams Telephone Message Book W/Dividers/Space For Phone Numbers, 5 1/4"X8 1/2", 200/Messages', 36.352, 8, 0.2, 11.36),
+(744, 'US-2016-146710', '27-08-2016', '01-09-2016', 'Standard Class', 'SS-20875', 'Sung Shariari', 'Consumer', 'United States', 'Dallas', 'Texas', 75220, 'Central', 'OFF-PA-10002615', 'Office Supplies', 'Paper', 'Ampad Gold Fibre Wirebound Steno Books, 6" x 9", Gregg Ruled', 3.528, 1, 0.2, 1.1466),
+(746, 'US-2016-146710', '27-08-2016', '01-09-2016', 'Standard Class', 'SS-20875', 'Sung Shariari', 'Consumer', 'United States', 'Dallas', 'Texas', 75220, 'Central', 'OFF-SU-10004261', 'Office Supplies', 'Supplies', 'Fiskars 8" Scissors, 2/Pack', 55.168, 4, 0.2, 6.2064),
+(760, 'CA-2017-133333', '18-09-2017', '22-09-2017', 'Standard Class', 'BF-11020', 'Barry Französisch', 'Corporate', 'United States', 'Green Bay', 'Wisconsin', 54302, 'Central', 'OFF-PA-10002377', 'Office Supplies', 'Paper', 'Adams Telephone Message Book W/Dividers/Space For Phone Numbers, 5 1/4"X8 1/2", 200/Messages', 22.72, 4, 0.0, 10.224),
+(849, 'CA-2017-107503', '01-01-2017', '06-01-2017', 'Standard Class', 'GA-14725', 'Guy Armstrong', 'Consumer', 'United States', 'Lorain', 'Ohio', 44052, 'East', 'FUR-FU-10003878', 'Furniture', 'Furnishings', 'Linden 10" Round Wall Clock, Black', 48.896, 4, 0.2, 8.5568),
+(873, 'CA-2014-148488', '10-12-2014', '15-12-2014', 'Standard Class', 'SM-20005', 'Sally Matthias', 'Consumer', 'United States', 'New York City', 'New York', 10009, 'East', 'OFF-PA-10004470', 'Office Supplies', 'Paper', 'Adams Write n'' Stick Phone Message Book, 11" X 5 1/4", 200 Messages', 11.36, 2, 0.0, 5.2256),
+(879, 'US-2014-158638', '17-09-2014', '21-09-2014', 'Standard Class', 'AG-10765', 'Anthony Garverick', 'Home Office', 'United States', 'Philadelphia', 'Pennsylvania', 19120, 'East', 'OFF-BI-10003712', 'Office Supplies', 'Binders', 'Acco Pressboard Covers with Storage Hooks, 14 7/8" x 11", Light Blue', 5.892, 4, 0.7, -4.1244),
+(892, 'CA-2017-133256', '26-06-2017', '27-06-2017', 'First Class', 'TH-21550', 'Tracy Hopkins', 'Home Office', 'United States', 'Detroit', 'Michigan', 48227, 'Central', 'OFF-PA-10001622', 'Office Supplies', 'Paper', 'Ampad Poly Cover Wirebound Steno Book, 6" x 9" Assorted Colors, Gregg Ruled', 4.54, 1, 0.0, 2.043),
+(933, 'CA-2017-114216', '02-09-2017', '06-09-2017', 'Standard Class', 'RK-19300', 'Ralph Kennedy', 'Consumer', 'United States', 'Philadelphia', 'Pennsylvania', 19140, 'East', 'OFF-PA-10002195', 'Office Supplies', 'Paper', 'RSVP Cards & Envelopes, Blank White, 8-1/2" X 11", 24 Cards/25 Envelopes/Set', 12.192, 3, 0.2, 4.1148),
+(934, 'CA-2016-140081', '20-06-2016', '24-06-2016', 'Standard Class', 'CG-12040', 'Catherine Glotzbach', 'Home Office', 'United States', 'Philadelphia', 'Pennsylvania', 19120, 'East', 'OFF-PA-10001745', 'Office Supplies', 'Paper', 'Wirebound Message Books, 2 7/8" x 5", 3 Forms per Page', 45.056, 8, 0.2, 15.2064),
+(941, 'CA-2016-105760', '19-06-2016', '20-06-2016', 'First Class', 'KC-16255', 'Karen Carlisle', 'Corporate', 'United States', 'San Francisco', 'California', 94110, 'West', 'OFF-PA-10000350', 'Office Supplies', 'Paper', 'Message Book, Standard Line "While You Were Out", 5 1/2" X 4", 200 Sets/Book', 17.12, 2, 0.0, 8.0464),
+(942, 'CA-2016-142958', '13-12-2016', '20-12-2016', 'Standard Class', 'RW-19630', 'Rob Williams', 'Corporate', 'United States', 'Torrance', 'California', 90503, 'West', 'OFF-BI-10001759', 'Office Supplies', 'Binders', 'Acco Pressboard Covers with Storage Hooks, 14 7/8" x 11", Dark Blue', 6.096, 2, 0.2, 2.2098),
+(959, 'CA-2017-102414', '15-05-2017', '18-05-2017', 'Second Class', 'JA-15970', 'Joseph Airdo', 'Consumer', 'United States', 'Phoenix', 'Arizona', 85023, 'West', 'OFF-PA-10002333', 'Office Supplies', 'Paper', 'Universal Ultra Bright White Copier/Laser Paper, 8 1/2" x 11", Ream', 15.552, 3, 0.2, 5.6376);
+
+INSERT INTO book1
+SELECT *
+FROM sales_data_missing;
+SELECT COUNT(*) FROM book1;
+
+SELECT ROUND(SUM(Sales),4) FROM book1;
+RENAME TABLE `book1` TO sales_data;
+select sum(sales) from sales_data;
+select count(*) from sales_data;
+
+INSERT INTO Customers (Customer_ID, Customer_Name, Segment)
+SELECT DISTINCT
+    `Customer ID`,
+    `Customer Name`,
+    Segment
+FROM sales_data;
+INSERT INTO Orders (Order_ID, Order_Date, Ship_Date, Ship_Mode)
+SELECT DISTINCT
+    `Order ID`,
+    STR_TO_DATE(`Order Date`, '%d-%m-%Y'),
+    STR_TO_DATE(`Ship Date`, '%d-%m-%Y'),
+    `Ship Mode`
+FROM sales_data;
+INSERT INTO Location (Postal_Code, Country, City, State, Region)
+SELECT DISTINCT
+    `Postal Code`,
+    Country,
+    City,
+    State,
+    Region
+FROM sales_data;
+INSERT INTO Products (Product_ID, Category, Sub_Category, Product_Name)
+SELECT
+    `Product ID`,
+    MAX(Category),
+    MAX(`Sub-Category`),
+    MAX(`Product Name`)
+FROM sales_data
+GROUP BY `Product ID`;
+INSERT INTO Sales (
+    Row_ID,
+    Order_ID,
+    Customer_ID,
+    Product_ID,
+    Postal_Code,
+    Sales,
+    Quantity,
+    Discount,
+    Profit
+)
+SELECT
+    `Row ID`,
+    `Order ID`,
+    `Customer ID`,
+    `Product ID`,
+    `Postal Code`,
+    Sales,
+    Quantity,
+    Discount,
+    Profit
+FROM sales_data;
+select count(*) from sales;
+select sum(sales) from sales;
+SELECT
+    COUNT(*) AS Total_Rows,
+    COUNT(DISTINCT `Row ID`) AS Unique_Rows
+FROM sales_data;
+SELECT `Row ID`, COUNT(*)
+FROM sales_data
+GROUP BY `Row ID`
+HAVING COUNT(*) > 1;
+SELECT
+SUM(CASE WHEN `Customer ID` IS NULL THEN 1 ELSE 0 END) AS Missing_CustomerID,
+SUM(CASE WHEN Sales IS NULL THEN 1 ELSE 0 END) AS Missing_Sales,
+SUM(CASE WHEN Profit IS NULL THEN 1 ELSE 0 END) AS Missing_Profit
+FROM sales_data;
+SELECT DISTINCT Segment
+FROM sales_data;
+SELECT State,Profit
+FROM sales_data
+WHERE Profit < 0;
+
+SELECT DISTINCT Customer_Name
+FROM customers;
+
+SELECT COUNT(DISTINCT Customer_Name) AS Unique_Customers
+FROM customers;
+select sum(Sales) from sales;
+select sum(Sales) from sales_data;
+select sum(Profit) from sales;
+select sum(Profit) from sales_data;
+
+
+
+
+
